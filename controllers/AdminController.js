@@ -3,9 +3,9 @@ const prisma = new PrismaClient();
 const { generateHash, decodeHash } = require("../helpers/bcrypt");
 const { generateToken } = require("../helpers/jwt");
 
-class UserController {
-  static async getUserAll(_, res) {
-    const result = await prisma.user.findMany();
+class AdminController {
+  static async getAdminAll(_, res) {
+    const result = await prisma.admin.findMany();
     const resultWithoutPassword = result.map((item) => {
       const { password, ...sisanya } = item;
       return sisanya;
@@ -13,10 +13,10 @@ class UserController {
     res.status(200).json(resultWithoutPassword);
   }
 
-  static async registerUser(req, res) {
+  static async registerAdmin(req, res) {
     try {
       const { email, password } = req.body;
-      const result = await prisma.user.create({
+      const result = await prisma.admin.create({
         data: {
           email,
           password: generateHash(password),
@@ -28,11 +28,13 @@ class UserController {
     }
   }
 
-  static async loginUser(req, res) {
+  static async loginAdmin(req, res) {
     try {
       const { email, password } = req.body;
 
-      const result = await prisma.user.findUnique({
+      console.log(email, password);
+
+      const result = await prisma.admin.findUnique({
         where: {
           email,
         },
@@ -42,7 +44,7 @@ class UserController {
         const isPasswordValid = decodeHash(password, result.password);
         if (isPasswordValid) {
           const { id } = result;
-          res.status(200).json({ token: generateToken({ id, role: "user" }) });
+          res.status(200).json({ token: generateToken({ id, role: "admin" }) });
         } else {
           res.status(400).json({ message: "Password is invalid" });
         }
@@ -55,4 +57,4 @@ class UserController {
   }
 }
 
-module.exports = UserController;
+module.exports = AdminController;

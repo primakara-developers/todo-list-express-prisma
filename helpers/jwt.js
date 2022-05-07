@@ -6,7 +6,7 @@ function generateToken(payload) {
   return jwt.sign(payload, secret);
 }
 
-function decodeToken() {
+function decodeToken(token) {
   return jwt.verify(token, secret);
 }
 

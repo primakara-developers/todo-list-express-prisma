@@ -4,8 +4,12 @@ const prisma = new PrismaClient();
 const todo = ["makan", "minum", "ngegacha"];
 
 class ToDoController {
-  static async getToDo(_, res) {
-    const result = await prisma.todo.findMany();
+  static async getToDo(req, res) {
+    const result = await prisma.todo.findMany({
+      where: {
+        userId: req.loggedUser.id,
+      },
+    });
     res.status(200).json(result);
   }
 
@@ -25,6 +29,7 @@ class ToDoController {
       data: {
         title,
         description,
+        userId: req.loggedUser.id,
       },
     });
     res.status(201).json({ message: "Data succesfuly created", result });
